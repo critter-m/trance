@@ -1,75 +1,201 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import {Dimensions, FlatList, StyleSheet, Image, ScrollView, Switch, Text, View, TouchableOpacity} from "react-native";
+import {Collapsible} from "@/app-example/components/Collapsible";
+import {useState} from "react";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
+const categories = ['Binaural Beat', 'Noise', 'Drone', 'Ambience', 'Ear Candy', 'Narration'];
+const imageRows = [
+    [
+        {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
+        {src: require('@/assets/images/waves/beta.png'), label: 'Beta'},
+        {src: require('@/assets/images/waves/alpha.png'), label: 'Alpha'},
+        {src: require('@/assets/images/waves/theta.png'), label: 'Theta'},
+        {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
+    ],
+    [
+        {src: require('@/assets/images/waves/gamma.png'), label: 'White'},
+        {src: require('@/assets/images/waves/beta.png'), label: 'Pink'},
+        {src: require('@/assets/images/waves/alpha.png'), label: 'Brown'},
+    ],[
+        {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
+        {src: require('@/assets/images/waves/beta.png'), label: 'Beta'},
+        {src: require('@/assets/images/waves/alpha.png'), label: 'Alpha'},
+        {src: require('@/assets/images/waves/theta.png'), label: 'Theta'},
+        {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
+    ],[
+        {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
+        {src: require('@/assets/images/waves/beta.png'), label: 'Beta'},
+        {src: require('@/assets/images/waves/alpha.png'), label: 'Alpha'},
+        {src: require('@/assets/images/waves/theta.png'), label: 'Theta'},
+        {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
+    ],[
+        {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
+        {src: require('@/assets/images/waves/beta.png'), label: 'Beta'},
+        {src: require('@/assets/images/waves/alpha.png'), label: 'Alpha'},
+        {src: require('@/assets/images/waves/theta.png'), label: 'Theta'},
+        {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
+    ],[
+        {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
+        {src: require('@/assets/images/waves/beta.png'), label: 'Beta'},
+        {src: require('@/assets/images/waves/alpha.png'), label: 'Alpha'},
+        {src: require('@/assets/images/waves/theta.png'), label: 'Theta'},
+        {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
+    ],
+];
+
+const { width } = Dimensions.get('window');
+
+
+export default function Index() {
+    const [switchStates, setSwitchStates] = useState(
+        Array(6).fill(false)
+    );
+
+    const toggleSwitch = (index: number) => {
+        const newStates = [...switchStates];
+        newStates[index] = !newStates[index];
+        setSwitchStates(newStates);
+    };
+
+    const [isPlaying, setIsPlaying] = useState(false);
+
+    const togglePlayPause = () => {
+        setIsPlaying(prev => !prev);
+    };
+
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View>
+
+       <ScrollView
+           showsVerticalScrollIndicator={false}
+           contentContainerStyle={styles.container}
+       >
+           {imageRows.map((images, rowIndex) => (
+           <View style={styles.row} key={rowIndex}>
+               <FlatList
+                   data={images}
+                   horizontal
+                   pagingEnabled
+                   showsHorizontalScrollIndicator={false}
+                   keyExtractor={(_, i) => i.toString()}
+                   renderItem={({ item }) => (
+                       <View style={styles.imageWrapper}>
+                           <Image
+                                source={item.src}
+                                style={styles.image}
+                            />
+
+                           <Text style={styles.overlayText}>{item.label}</Text>
+                       </View>
+                    )}
+               />
+               <Text style={styles.labelText}>{categories[rowIndex]}</Text>
+               <Switch
+                   style={styles.switch}
+                   value={switchStates[rowIndex]}
+                   onValueChange={() => toggleSwitch(rowIndex)}
+               />
+           </View>
+           ))}
+       </ScrollView>
+       <View style={styles.player}>
+           <TouchableOpacity onPress={togglePlayPause} style={styles.playPauseButton}>
+               <Text style={styles.buttonText}>
+                   {isPlaying ? '||' : '>'}
+               </Text>
+           </TouchableOpacity>
+       </View>
+
+      </View>
   );
 }
 
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+    container: {
+        paddingBottom: 70,
+    },
+    row: {
+        position: 'relative',
+    },
+    image: {
+        width: width,
+        height: 150,
+        resizeMode: 'cover',
+    },
+    switch: {
+        position: 'absolute',
+        top: '50%',
+        left: 10,
+        transform: [{ translateY: -20 }],
+        zIndex: 1,
+    },
+    overlayText: {
+        position: 'absolute',
+        color: 'white',
+        outline: 'black',
+        fontSize: 16,
+        fontWeight: 'bold',
+        bottom: 8,
+        left: 10,
+        textShadowColor: 'rgba(0,0,0,0.6)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 2,
+    },
+
+    labelText: {
+        position: 'absolute',
+        color: 'black',
+        outline: 'white',
+        left: 0,
+        right: 0,
+        top: '36%',
+        fontSize: 30,
+        fontWeight: 'bold',
+        textShadowColor: 'rgba(0,0,0,0.6)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 2,
+        // top: '50%',
+        // left: '50%',
+        // transform: [{ translateY: -20 }, {translateX: -20}],
+        zIndex: 1,
+        textAlign: 'center',
+        pointerEvents: 'none',
+
+    },
+
+    imageWrapper: {
+        width: width,
+        height: 150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative',
+    },
+
+
+    player: {
+        width: width,
+        height: 70,
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0,
+        backgroundColor: 'white',
+    },
+
+    playPauseButton: {
+        backgroundColor: '#000',
+        paddingVertical: 15,
+        paddingHorizontal: 25,
+        borderRadius: 25,
+    },
+
+    buttonText: {
+        color: 'white',
+        fontSize: 25,
+        fontWeight: 'bold',
+    },
+
+
 });
