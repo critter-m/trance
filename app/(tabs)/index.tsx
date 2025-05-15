@@ -1,9 +1,11 @@
 import {Dimensions, FlatList, StyleSheet, Image, ScrollView, Switch, Text, View, TouchableOpacity} from "react-native";
 import {Collapsible} from "@/app-example/components/Collapsible";
 import {useState} from "react";
+import { useEffect } from 'react';
+import { AudioPlayer } from 'expo-audio';
+import { useAudioPlayer } from 'expo-audio';
 
-
-const categories = ['Binaural Beat', 'Noise', 'Drone', 'Ambience', 'Ear Candy', 'Narration'];
+const categories = ['Binaural Beat', 'Noise', 'Ambience', 'Drone', 'Ear Candy', 'Narration'];
 const imageRows = [
     [
         {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
@@ -45,28 +47,71 @@ const imageRows = [
 
 const { width } = Dimensions.get('window');
 
+const audioFiles = [
+    [
+        {src: require('@/assets/audio/THETA-6Hz.wav'), label: 'Theta'},
+        {src: require('@/assets/audio/DELTA-3Hz.wav'), label: 'Delta'},
+
+    ],
+    [
+        {src: require('@/assets/audio/White Noise.wav'), label: 'White'},
+        {src: require('@/assets/audio/Pink Noise.wav'), label: 'Pink'},
+        {src: require('@/assets/audio/Brown Noise.wav'), label: 'Brown'}
+    ],
+    [
+        {src: require('@/assets/audio/Suburban Tree Frogs.mp3'), label: 'Frogs'},
+        {src: require('@/assets/audio/Summer Night (Crickets).mp3'), label: 'Crickets'}
+    ],
+];
+
+
+
 
 export default function Index() {
     const [switchStates, setSwitchStates] = useState(
         Array(6).fill(false)
     );
 
+    const changeSound = () => {
+
+    };
+
     const toggleSwitch = (index: number) => {
         const newStates = [...switchStates];
         newStates[index] = !newStates[index];
         setSwitchStates(newStates);
+        newStates[index] ? players[index].muted=false : players[index].muted=true;
     };
 
     const [isPlaying, setIsPlaying] = useState(false);
 
     const togglePlayPause = () => {
         setIsPlaying(prev => !prev);
+        if (isPlaying) {
+            players.forEach(player => player.pause());
+        }
+        if (!isPlaying) {
+            players.forEach(player => player.play());
+        }
     };
 
+    const players = [
+        useAudioPlayer(audioFiles[0][0].src),
+        useAudioPlayer(audioFiles[1][0].src),
+        useAudioPlayer(audioFiles[2][0].src),
+        useAudioPlayer(audioFiles[2][1].src),
+    ];
+
+    for (const player of players) {player.loop=true;}
+
+    const onScrollToIndex = (index: number, rowIndex: number) => {
+        const currentPlayer = players[rowIndex]; // Load new audio
+        currentPlayer.replace(audioFiles[rowIndex][index].src); // Play the new audio
+        currentPlayer.play();
+    };
 
   return (
       <View>
-
        <ScrollView
            showsVerticalScrollIndicator={false}
            contentContainerStyle={styles.container}
@@ -79,16 +124,20 @@ export default function Index() {
                    pagingEnabled
                    showsHorizontalScrollIndicator={false}
                    keyExtractor={(_, i) => i.toString()}
-                   renderItem={({ item }) => (
+                   renderItem={({ item, index }) => (
                        <View style={styles.imageWrapper}>
                            <Image
                                 source={item.src}
                                 style={styles.image}
                             />
-
                            <Text style={styles.overlayText}>{item.label}</Text>
                        </View>
                     )}
+                   onMomentumScrollEnd={(e) => {
+                       const contentOffsetX = e.nativeEvent.contentOffset.x;
+                       const index = Math.floor(contentOffsetX / width);
+                       onScrollToIndex(index, rowIndex);
+                   }}
                />
                <Text style={styles.labelText}>{categories[rowIndex]}</Text>
                <Switch
