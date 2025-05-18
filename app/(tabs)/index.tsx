@@ -143,7 +143,7 @@ export default function Index() {
                    onValueChange={() => toggleSwitch(rowIndex)}
                />
                <Collapsible title=''>
-                   <Text style={styles.volumeLabel}>Volumee</Text>
+                   <Text style={styles.volumeLabel}>Volume</Text>
                    {/*<Slider*/}
                    {/*    style={styles.slider}*/}
                    {/*    minimumValue={0}*/}
