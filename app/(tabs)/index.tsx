@@ -1,10 +1,12 @@
 import {Dimensions, FlatList, StyleSheet, Image, ScrollView, Switch, Text, View, TouchableOpacity} from "react-native";
-import {Collapsible} from "@/app-example/components/Collapsible";
-import {useState} from "react";
+import {Collapsible} from "@/app/components/Collapsible";
+import React, {useState} from "react";
+// import Slider from '@react-native-community/slider';
 import { useEffect } from 'react';
 import { AudioPlayer } from 'expo-audio';
 import { useAudioPlayer } from 'expo-audio';
 
+const { width } = Dimensions.get('window');
 const categories = ['Binaural Beat', 'Noise', 'Ambience', 'Drone', 'Ear Candy', 'Narration'];
 const imageRows = [
     [
@@ -15,9 +17,9 @@ const imageRows = [
         {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
     ],
     [
-        {src: require('@/assets/images/waves/gamma.png'), label: 'White'},
-        {src: require('@/assets/images/waves/beta.png'), label: 'Pink'},
-        {src: require('@/assets/images/waves/alpha.png'), label: 'Brown'},
+        {src: require('@/assets/images/noise/white noise.jpg'), label: 'White'},
+        {src: require('@/assets/images/noise/pink noise.jpg'), label: 'Pink'},
+        {src: require('@/assets/images/noise/brown noise.jpg'), label: 'Brown'},
     ],[
         {src: require('@/assets/images/waves/gamma.png'), label: 'Gamma'},
         {src: require('@/assets/images/waves/beta.png'), label: 'Beta'},
@@ -44,14 +46,10 @@ const imageRows = [
         {src: require('@/assets/images/waves/delta.png'), label: 'Delta'},
     ],
 ];
-
-const { width } = Dimensions.get('window');
-
 const audioFiles = [
     [
         {src: require('@/assets/audio/THETA-6Hz.wav'), label: 'Theta'},
         {src: require('@/assets/audio/DELTA-3Hz.wav'), label: 'Delta'},
-
     ],
     [
         {src: require('@/assets/audio/White Noise.wav'), label: 'White'},
@@ -65,16 +63,11 @@ const audioFiles = [
 ];
 
 
-
-
 export default function Index() {
+
     const [switchStates, setSwitchStates] = useState(
         Array(6).fill(false)
     );
-
-    const changeSound = () => {
-
-    };
 
     const toggleSwitch = (index: number) => {
         const newStates = [...switchStates];
@@ -101,8 +94,14 @@ export default function Index() {
         useAudioPlayer(audioFiles[2][0].src),
         useAudioPlayer(audioFiles[2][1].src),
     ];
-
-    for (const player of players) {player.loop=true;}
+    useEffect(() => {
+        // Set all players to loop and pause them
+        players.forEach((player) => {
+            player.loop=true; // Set loop
+            player.pause(); // Ensure players are paused initially
+            player.muted=true;
+        });
+    }, []);
 
     const onScrollToIndex = (index: number, rowIndex: number) => {
         const currentPlayer = players[rowIndex]; // Load new audio
@@ -117,7 +116,7 @@ export default function Index() {
            contentContainerStyle={styles.container}
        >
            {imageRows.map((images, rowIndex) => (
-           <View style={styles.row} key={rowIndex}>
+           <View style={styles.container} key={rowIndex}>
                <FlatList
                    data={images}
                    horizontal
@@ -145,6 +144,19 @@ export default function Index() {
                    value={switchStates[rowIndex]}
                    onValueChange={() => toggleSwitch(rowIndex)}
                />
+               <Collapsible title=''>
+                   <Text style={styles.volumeLabel}>Volumee</Text>
+                   {/*<Slider*/}
+                   {/*    style={styles.slider}*/}
+                   {/*    minimumValue={0}*/}
+                   {/*    maximumValue={1}*/}
+                   {/*    // value={volume}*/}
+                   {/*    // onValueChange={handleVolumeChange}*/}
+                   {/*    thumbTintColor="#000"*/}
+                   {/*    minimumTrackTintColor="#000"*/}
+                   {/*    maximumTrackTintColor="#ddd"*/}
+                   {/*/>*/}
+               </Collapsible>
            </View>
            ))}
        </ScrollView>
@@ -246,5 +258,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 
-
+    volumeControl: {
+        paddingHorizontal: 20,
+        marginBottom: 20,
+    },
+    volumeLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    slider: {
+        width: '100%',
+    },
 });
