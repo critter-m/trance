@@ -3,7 +3,7 @@ import {Collapsible} from "@/app/components/Collapsible";
 import React, {useState, useEffect} from "react";
 // import Slider from '@react-native-community/slider';
 import { useAudioPlayer } from 'expo-audio';
-
+//test
 const { width } = Dimensions.get('window');
 const categories = ['Binaural Beat', 'Noise', 'Ambience', 'Drone', 'Ear Candy', 'Narration'];
 const imageRows = [
