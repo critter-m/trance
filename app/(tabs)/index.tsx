@@ -1,9 +1,7 @@
 import {Dimensions, FlatList, StyleSheet, Image, ScrollView, Switch, Text, View, TouchableOpacity} from "react-native";
 import {Collapsible} from "@/app/components/Collapsible";
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 // import Slider from '@react-native-community/slider';
-import { useEffect } from 'react';
-import { AudioPlayer } from 'expo-audio';
 import { useAudioPlayer } from 'expo-audio';
 
 const { width } = Dimensions.get('window');
